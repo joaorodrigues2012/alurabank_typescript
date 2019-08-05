@@ -16,7 +16,7 @@ class NegociacoesView extends View<Negociacoes> {
             ${model.paraArray().map(negociacoes =>
             `
                 <tr>
-                <td>${negociacoes.data.getDate() + '/' + negociacoes.data.getMonth() + 1 + '/' + negociacoes.data.getFullYear()}</td>
+                <td>${negociacoes.data.getDate()}/${negociacoes.data.getMonth() + 1}/${negociacoes.data.getFullYear()}</td>
                 <td>${negociacoes.quantidade}</td>
                 <td>${negociacoes.valor}</td>
                 <td>${negociacoes.volume}</td>
