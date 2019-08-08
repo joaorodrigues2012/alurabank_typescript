@@ -1,11 +1,18 @@
 import {NegociacoesView, MensagemView} from "../views/index";
 import {Negociacao, Negociacoes} from "../models/index";
+import {domInject} from "../helpers/decorators/index";
 
 export class NegociacaoController {
 
+    @domInject('#data')
     private _inputdata: JQuery;
+
+    @domInject('#quantidade')
     private _inputQuantidade: JQuery;
+
+    @domInject('#valor')
     private _inputValor: JQuery;
+
     private _negociacoes = new Negociacoes();
     private _negociacoesView = new NegociacoesView('#negociacoesView');
     private _mensagemView = new MensagemView('#mensagemView');
@@ -14,15 +21,18 @@ export class NegociacaoController {
         //this._inputdata = <HTMLInputElement>document.querySelector("#data");
         //this._inputQuantidade = <HTMLInputElement>document.querySelector("#quantidade");
         //this._inputValor = <HTMLInputElement>document.querySelector("#valor");
-        this._inputdata = $("#data");
-        this._inputQuantidade = $("#quantidade");
-        this._inputValor = $("#valor");
+
+        // this._inputdata = $("#data");
+        // this._inputQuantidade = $("#quantidade");
+        // this._inputValor = $("#valor");
+
 
         this._negociacoesView.update(this._negociacoes);
     }
 
     adiciona(event: Event) {
         //alert("Minha logica aqui");
+        //const t1 = performance.now();
         event.preventDefault();
 
         let data = new Date(this._inputdata.val().replace(/-/g, ','));
@@ -45,6 +55,9 @@ export class NegociacaoController {
         this._negociacoes.adiciona(negociacao);
         this._negociacoesView.update(this._negociacoes);
         this._mensagemView.update('Negociação adicionada com sucesso!');
+
+        // const t2 = performance.now();
+        // console.log(`o tempo de execução de adiciona é de ${t2 - t1} ms`);
 
         this._negociacoes.paraArray().forEach(negociacao => {
             console.log(negociacao.data);
