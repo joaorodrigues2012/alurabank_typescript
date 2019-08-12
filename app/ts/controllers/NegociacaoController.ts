@@ -2,6 +2,7 @@ import {NegociacoesView, MensagemView} from "../views/index";
 import {Negociacao, NegociacaoParcial, Negociacoes} from "../models/index";
 import {domInject, throttle} from "../helpers/decorators/index";
 import {NegociacaoService, HandlerFuction} from "../services/NegociacaoService";
+import {imprime} from "../helpers/Utils";
 
 export class NegociacaoController {
 
@@ -56,6 +57,8 @@ export class NegociacaoController {
         );
 
         this._negociacoes.adiciona(negociacao);
+        imprime(negociacao, this._negociacoes);
+
         this._negociacoesView.update(this._negociacoes);
         this._mensagemView.update('Negociação adicionada com sucesso!');
 
@@ -75,25 +78,38 @@ export class NegociacaoController {
     }
 
     @throttle()
-    importaDados() {
+    async importaDados() {
 
-        const isOk: HandlerFuction = (res: Response) => {
+        try {
 
-            if (res.ok) {
-                return res;
-            } else {
-                throw new Error(res.statusText);
-            }
+            const isOk: HandlerFuction = (res: Response) => {
 
-        };
+                if (res.ok) {
+                    return res;
+                } else {
+                    throw new Error(res.statusText);
+                }
 
-        this._negociacaoSerivce.obterNegociacoes(isOk)
-            .then(negociacoes => {
+            };
 
-                negociacoes.forEach(negociacao => this._negociacoes.adiciona(negociacao));
+            const negociacoes = await this._negociacaoSerivce.obterNegociacoes(isOk);
 
-                this._negociacoesView.update(this._negociacoes);
-            });
+            const negociacoesJaImportadas = this._negociacoes.paraArray();
+
+            negociacoes
+                .filter(negociacao =>
+                    !negociacoesJaImportadas.some(jaImportada =>
+                        negociacao.ehIgual(jaImportada)))
+                .forEach(negociacao =>
+                    this._negociacoes.adiciona(negociacao));
+
+            this._negociacoesView.update(this._negociacoes);
+
+        } catch (err) {
+            this._mensagemView.update(err.message);
+        }
+
+
     }
 }
 
